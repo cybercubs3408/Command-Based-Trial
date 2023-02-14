@@ -7,16 +7,19 @@ package frc.robot;
 import static edu.wpi.first.wpilibj.PS4Controller.Button;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.TurnToAngle;
 import frc.robot.commands.TurnToAngleProfiled;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -28,9 +31,12 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final IntakeSubsystem m_robotIntake = new IntakeSubsystem();
 
   // The driver's controller
   PS4Controller m_driverController = new PS4Controller(OIConstants.kDriverControllerPort);
+  Joystick left = new Joystick(0);
+  Joystick right = new Joystick(1);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -38,14 +44,15 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Configure default commands
-    // Set the default drive command to split-stick arcade drive
+    // Set the default drive command to split-stick tank drive
     m_robotDrive.setDefaultCommand(
-        // A split-stick arcade command, with forward/backward controlled by the left
+        // A split-stick tank drive command, with forward/backward controlled by the left
         // hand, and turning controlled by the right.
         new RunCommand(
             () ->
                 m_robotDrive.tankDrive(
-                    -m_driverController.getLeftY(), m_driverController.getRightY()),
+                    //-m_driverController.getLeftY(), m_driverController.getRightY()),
+                    left.getRawAxis(1), right.getRawAxis(1)),
             m_robotDrive));
   }
 
@@ -85,6 +92,11 @@ public class RobotContainer {
     // Turn to -90 degrees with a profile when the Circle button is pressed, with a 5 second timeout
     new JoystickButton(m_driverController, Button.kCircle.value)
         .onTrue(new TurnToAngleProfiled(-90, m_robotDrive).withTimeout(5));
+    
+    // When the ___ button on the ____ is held run intake, when released turn off intake
+    new JoystickButton(controller, button)
+        .onTrue(new InstantCommand(() -> m_robotIntake.runIntake(.3)))
+        .onFalse(new InstantCommand(() -> m_robotIntake.stopIntake()));
   }
 
   /**

@@ -14,6 +14,9 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix.motorcontrol.can.*;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 
 public class DriveSubsystem extends SubsystemBase {
   /*
@@ -33,10 +36,14 @@ public class DriveSubsystem extends SubsystemBase {
   private final DifferentialDrive m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
   */
 
-  WPI_TalonSRX t1 = new WPI_TalonSRX(1);
-  WPI_TalonSRX t2 = new WPI_TalonSRX(2);
-  WPI_TalonSRX t3 = new WPI_TalonSRX(3);
-  WPI_TalonSRX t4 = new WPI_TalonSRX(4);
+  // WPI_TalonSRX t1 = new WPI_TalonSRX(1);
+  // WPI_TalonSRX t2 = new WPI_TalonSRX(2);
+  // WPI_TalonSRX t3 = new WPI_TalonSRX(3);
+  // WPI_TalonSRX t4 = new WPI_TalonSRX(4);
+  CANSparkMax t1 = new CANSparkMax(6, MotorType.kBrushless);
+  CANSparkMax t2 = new CANSparkMax(7, MotorType.kBrushless);
+  CANSparkMax t3 = new CANSparkMax(8, MotorType.kBrushless);
+  CANSparkMax t4 = new CANSparkMax(9, MotorType.kBrushless);
 
   MotorControllerGroup m_left = new MotorControllerGroup(t1, t2);
   MotorControllerGroup m_right = new MotorControllerGroup(t3,t4);
@@ -80,7 +87,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param right right half movement
    */
   public void tankDrive(double left, double right) {
-    m_drive.tankDrive(left, right);
+    m_drive.tankDrive(-left, right);
   }
 
   /** Resets the drive encoders to currently read a position of 0. */
